@@ -28,14 +28,21 @@ Board *Board::copy() {
     return newBoard;
 }
 
+/* Returns true if the location (x, y) on the board is occupied (taken),
+ * false otherwise. */
 bool Board::occupied(int x, int y) {
     return taken[x + 8*y];
 }
 
+/* Returns true if the location (x, y) on the board is of color 'side'.
+ * False otherwise (if location is unoccupied or if the location
+ * occupied is not of color 'side'). */
 bool Board::get(Side side, int x, int y) {
     return occupied(x, y) && (black[x + 8*y] == (side == BLACK));
 }
 
+/* Set the location (x, y) to taken and if the side is black, set the
+ * (x + 8y) position in the array black to true. Set it to false otherwise. */
 void Board::set(Side side, int x, int y) {
     taken.set(x + 8*y);
     black.set(x + 8*y, side == BLACK);
