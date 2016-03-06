@@ -48,6 +48,7 @@ void Board::set(Side side, int x, int y) {
     black.set(x + 8*y, side == BLACK);
 }
 
+/* Returns true if the location (x, y) exists on the board. False otherwise. */
 bool Board::onBoard(int x, int y) {
     return(0 <= x && x < 8 && 0 <= y && y < 8);
 }
