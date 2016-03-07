@@ -14,8 +14,10 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
-     Board *pBoard = new Board(); // player board
-     pBoard = pBoard->Board::copy(); // set up the board
+     pBoard = new Board(); // player board
+     pBoard->Board::copy(); // set up the board
+     timeTaken = 30000;
+     theSide = side;
 }
 
 /*
@@ -41,6 +43,13 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    pBoard->Board::doMove(opponentsMove, side);
+    if (this->timeTaken >= msLeft && msLeft != -1)
+    {
+        cout << "Opponent Disqualified!" <<endl;
+        return NULL;
+    }
+
+    pBoard->Board::doMove(opponentsMove, this->theSide);
+    
     return NULL;
 }
