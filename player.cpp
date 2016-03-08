@@ -27,25 +27,34 @@ Player::Player(Side side) {
      
      /* The inner square (surrounds the starting square), is the safest
       * place to play if there are no good edges or corners available. */
-     int innerSquare[] = {2 + 8 * 3, 2 + 8 * 4, 3 + 8 * 2, 3 + 8 * 4, 
-					4 + 8 * 2, 4 + 8 * 4, 5 + 8 * 3, 5 + 8 * 4};
+     //int innerSquare[] = {2 + 8 * 3, 2 + 8 * 4, 3 + 8 * 2, 3 + 8 * 4, 
+						  //4 + 8 * 2, 4 + 8 * 4, 5 + 8 * 3, 5 + 8 * 4};
+	int innerSquare[] = {2, 3, 2, 4, 3, 2, 3, 4, 4, 2, 4, 4, 5, 3, 5, 4};
 				
 	 /* These are the corners of the inner square. */
-	 int goodInnerCorners[] = {2 + 8 * 2, 2 + 8 * 4, 5 + 8 * 2, 5 + 8 * 4};
+	 //int goodInnerCorners[] = {2 + 8 * 2, 2 + 8 * 4, 5 + 8 * 2, 5 + 8 * 4};
+	 int goodInnerCorners[] = {2, 2, 2, 4, 5, 2, 5, 4};
 					   
 	 /* The corners are the best possible moves to play. */
-	 int corners[] = {0 + 8 * 0, 0 + 8 * 7, 7 + 8 * 0, 7 + 8 * 7};
+	 //int corners[] = {0 + 8 * 0, 0 + 8 * 7, 7 + 8 * 0, 7 + 8 * 7};	 
+	 //Move corners[] = {Move(0, 0), Move(0, 7), Move(7, 0), Move(7, 7)};
+	 int coRners[] = {0, 0, 0, 7, 7, 0, 7, 7};
 	 
 	 /* The good edges are all the edges except the corners and the edge
 	  * spots adjacent to the corners. These are the second best moves to
 	  * be played, right after the corners. */
-	 int goodEdges[] = {0 + 8 * 2, 0 + 8 * 3, 0 + 8 * 4, 0 + 8 * 5,
+	 /*int goodEdges[] = {0 + 8 * 2, 0 + 8 * 3, 0 + 8 * 4, 0 + 8 * 5,
 				  7 + 8 * 2, 7 + 8 * 3, 7 + 8 * 4, 7 + 8 * 5,
 				  2 + 8 * 0, 3 + 8 * 0, 4 + 8 * 0, 5 + 8 * 0,
-				  2 + 8 * 7, 3 + 8 * 7, 4 + 8 * 7, 5 + 8 * 7};
+				  2 + 8 * 7, 3 + 8 * 7, 4 + 8 * 7, 5 + 8 * 7};*/
+	 int goodEdges[] = {0, 2, 0, 3, 0, 4, 0, 5,
+						7, 2, 7, 3, 7, 4, 7, 5,
+						2, 0, 3, 0, 4, 0, 4, 0,
+						2, 7, 3, 7, 4, 7, 5, 7};
 				  
 	 /* The spots diagonal to the corners are the worst spots to play.*/
-	 int worstFour[] = {1 + 8 * 1, 1 + 8 * 6, 6 + 8 * 1, 6 + 8 * 6};
+	 //int worstFour[] = {1 + 8 * 1, 1 + 8 * 6, 6 + 8 * 1, 6 + 8 * 6};
+	 int test[] = {0, 1, 2, 3};
 }
 
 /*
@@ -92,7 +101,37 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 Move *Player::bestMove(Side side)
 {
     if (pBoard->hasMoves(pSide))
-    {
+    {/*
+		for (int i = 0; i < 4; i += 2)
+		{
+			Move *move = new Move(test[i], test[i + 1]);
+			if (pBoard->Board::checkMove(move, pSide))
+				return move;
+		}*/
+		for (int i = 0; i < 8; i += 2)
+		{
+			Move *move = new Move(coRners[i], coRners[i + 1]);
+			if (pBoard->Board::checkMove(move, pSide))
+				return move;
+		}
+		for (int i = 0; i < 32; i += 2)
+		{
+			Move *move = new Move(goodEdges[i], goodEdges[i + 1]);
+			if (pBoard->Board::checkMove(move, pSide))
+				return move;
+		}
+		for (int i = 0; i < 8; i += 2)
+		{
+			Move *move = new Move(goodInnerCorners[i], goodInnerCorners[i + 1]);
+			if (pBoard->Board::checkMove(move, pSide))
+				return move;
+		}
+		for (int i = 0; i < 16; i += 2)
+		{
+			Move *move = new Move(innerSquare[i], innerSquare[i + 1]);
+			if (pBoard->Board::checkMove(move, pSide))
+				return move;
+		}
         return pBoard->Board::firstPossMove(pSide);
     }
     else
