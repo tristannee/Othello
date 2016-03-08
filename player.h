@@ -23,7 +23,6 @@ private:
 	Side pSide;
 	Side oppSide;
 	int corners[8];
-	int coRners[8];
 	int goodInnerCorners[8];
 	int innerSquare[16];
 	int goodEdges[32];
