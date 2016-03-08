@@ -109,7 +109,7 @@ Move *Player::bestMove(Side side)
 		}
 		if (pBoard->Board::checkMove(moveC, pSide))
 		{
-			std::cerr << "CORNER" << std::endl;
+			std::cerr << "1::CORNER" << std::endl;
 			return moveC;
 		}
 			
@@ -122,7 +122,10 @@ Move *Player::bestMove(Side side)
 				moveG = move;
 		}
 		if (pBoard->Board::checkMove(moveG, pSide))
+		{
+			std::cerr << "2::GOOD EDGE" << std::endl;
 			return moveG;	
+		}
 			
 		Move *moveI = new Move(goodInnerCorners[0], goodInnerCorners[1]);
 		for (int i = 2; i < 8; i += 2)
@@ -133,7 +136,10 @@ Move *Player::bestMove(Side side)
 				moveI = move;
 		}
 		if (pBoard->Board::checkMove(moveI, pSide))
+		{
+			std::cerr << "3::GOOD INNER CORNER" << std::endl;
 			return moveI;	
+		}
 
 		Move *moveS = new Move(innerSquare[0], innerSquare[1]);
 		for (int i = 2; i < 16; i += 2)
@@ -144,16 +150,10 @@ Move *Player::bestMove(Side side)
 				moveS = move;
 		}
 		if (pBoard->Board::checkMove(moveS, pSide))
-			return moveS;			
-			
-
-			/*
-		for (int i = 0; i < 8; i += 2)
 		{
-			Move *move = new Move(corners[i], corners[i + 1]);
-			if (pBoard->Board::checkMove(move, pSide))
-				return move;
-		}	*/		
+			std::cerr << "4::INNER SQUARE" << std::endl;
+			return moveS;			
+		}	
 			
 		Move *moveN = new Move(nextMoves1[0], nextMoves1[1]);
 		for (int i = 2; i < 16; i += 2)
@@ -164,7 +164,10 @@ Move *Player::bestMove(Side side)
 				moveN = move;
 		}
 		if (pBoard->Board::checkMove(moveN, pSide))
+		{
+			std::cerr << "5::NEXT MOVES 1" << std::endl;
 			return moveN;
+		}
 			
 		Move *moveX = new Move(nextMoves2[0], nextMoves2[1]);
 		for (int i = 2; i < 16; i += 2)
@@ -175,7 +178,10 @@ Move *Player::bestMove(Side side)
 				moveX = move;
 		}
 		if (pBoard->Board::checkMove(moveX, pSide))
+		{
+			std::cerr << "6::NEXT MOVES 2" << std::endl;
 			return moveX;
+		}
 			
 		Move *moveM = new Move(nextEight[0], nextEight[1]);
 		for (int i = 2; i < 8; i += 2)
@@ -186,7 +192,11 @@ Move *Player::bestMove(Side side)
 				moveM = move;
 		}
 		if (pBoard->Board::checkMove(moveM, pSide))
+		{
+			std::cerr << "7::NEXT EIGHT" << std::endl;
 			return moveM;
+		}
+		std::cerr << "8::WORST MOVE" << std::endl;
 
         return pBoard->Board::firstPossMove(pSide);
     }
