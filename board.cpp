@@ -123,6 +123,7 @@ Move *Board::firstPossMove(Side side)
             if (checkMove(move, side)) return move;
         }
     }
+    return NULL;
 }
 
 /*
@@ -163,6 +164,47 @@ void Board::doMove(Move *m, Side side) {
         }
     }
     set(side, X, Y);
+}
+
+/*
+ * Returns the amount of stones that would change color
+ */
+int Board::countChange(Move *m, Side side) {
+    // A NULL move means pass.
+    if (m == NULL) return 0;
+    int count = 0;
+
+    // Ignore if move is invalid.
+    if (!checkMove(m, side)) return 0;
+
+    int X = m->getX();
+    int Y = m->getY();
+    Side other = (side == BLACK) ? WHITE : BLACK;
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            if (dy == 0 && dx == 0) continue;
+
+            int x = X;
+            int y = Y;
+            do {
+                x += dx;
+                y += dy;
+            } while (onBoard(x, y) && get(other, x, y));
+
+            if (onBoard(x, y) && get(side, x, y)) {
+                x = X;
+                y = Y;
+                x += dx;
+                y += dy;
+                while (onBoard(x, y) && get(other, x, y)) {
+                    x += dx;
+                    y += dy;
+                    count++;
+                }
+            }
+        }
+    }
+    return count;
 }
 
 /*

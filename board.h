@@ -27,6 +27,7 @@ public:
     bool checkMove(Move *m, Side side);
     Move *firstPossMove(Side side);
     void doMove(Move *m, Side side);
+    int countChange(Move *m, Side side);
     int count(Side side);
     int countBlack();
     int countWhite();

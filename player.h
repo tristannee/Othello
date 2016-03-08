@@ -26,7 +26,9 @@ private:
 	int goodInnerCorners[8];
 	int innerSquare[16];
 	int goodEdges[32];
-	int test[4];
+	int nextMoves1[16];
+	int nextMoves2[16];
+	int nextEight[8];
 };
 
 
