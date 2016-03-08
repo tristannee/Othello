@@ -15,9 +15,15 @@ Player::Player(Side side) {
      * 30 seconds.
      */
      pBoard = new Board(); // player board
-     pBoard->Board::copy(); // set up the board
-     timeTaken = 30000;
-     theSide = side;
+     //pBoard->Board::copy(); // set up the board
+     timeTaken = 0;
+
+     //initalize our side and the opponents side
+     pSide = side;
+     if (side == BLACK)
+        oppSide = WHITE;
+    else
+        oppSide = BLACK;
      
      /* The inner square (surrounds the starting square), is the safest
       * place to play if there are no good edges or corners available. */
@@ -64,14 +70,31 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     /* 
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
-     */
+     *
     if (this->timeTaken >= msLeft && msLeft != -1)
     {
         cout << "Opponent Disqualified!" <<endl;
         return NULL;
     }
+    */
+    if (!pBoard->isDone())
+    {
+        pBoard->Board::doMove(opponentsMove, oppSide);
 
-    pBoard->Board::doMove(opponentsMove, this->theSide);
-    
+        //Find our best move, and implement our move onto our board
+        Move *ourMove = bestMove(pSide);
+        pBoard->Board::doMove(ourMove, pSide);
+        return ourMove;
+    }
     return NULL;
+}
+
+Move *Player::bestMove(Side side)
+{
+    if (pBoard->hasMoves(pSide))
+    {
+        return pBoard->Board::firstPossMove(pSide);
+    }
+    else
+        return NULL;
 }

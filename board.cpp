@@ -110,6 +110,22 @@ bool Board::checkMove(Move *m, Side side) {
 }
 
 /*
+ * Gives the first possible move of all possible moves
+ * and returns it. Assumes there are possible moves
+ *
+ * For initial basic AI testing.
+ */
+Move *Board::firstPossMove(Side side)
+{
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            Move *move = new Move(i, j);
+            if (checkMove(move, side)) return move;
+        }
+    }
+}
+
+/*
  * Modifies the board to reflect the specified move.
  */
 void Board::doMove(Move *m, Side side) {
