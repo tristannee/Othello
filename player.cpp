@@ -70,31 +70,45 @@ Move *Player::bestMove(Side side)
 {
 	//std::this_thread::sleep_for (std::chrono::seconds(1));
 	
-    /* The corners are the best possible moves to play. */
+    /* The corners are the best possible moves to play.
+     * Score for corners is 100.*/
 	int corners[] = {0, 0, 0, 7, 7, 0, 7, 7};
-	/* The inner square (surrounds the starting square), is the safest
-    * place to play if there are no good edges or corners available. */
-	int innerSquare[] = {2, 3, 2, 4, 3, 2, 3, 4, 4, 2, 4, 4, 5, 3, 5, 4};
+
 	/* The good edges are all the edges except the corners and the edge
 	 * spots adjacent to the corners. These are the second best moves to
-	 * be played, right after the corners. */
+	 * be played, right after the corners. 
+	 * Score for good edges is 50*/
 	int goodEdges[] = {0, 2, 0, 3, 0, 4, 0, 5,
 						7, 2, 7, 3, 7, 4, 7, 5,
 						2, 0, 3, 0, 4, 0, 4, 0,
 						2, 7, 3, 7, 4, 7, 5, 7};
-	/* These are the corners of the inner square. */
+						
+	/* The inner square (surrounds the starting square), is the safest
+    * place to play if there are no good edges or corners available. 
+    * Score for inner square is 25*/
+	int innerSquare[] = {2, 3, 2, 4, 3, 2, 3, 4, 4, 2, 4, 4, 5, 3, 5, 4};
+	
+	/* These are the corners of the inner square. 
+	 * Score for good inner corners is 15*/
 	int goodInnerCorners[] = {2, 2, 2, 4, 5, 2, 5, 4};
 	
-	/* The next best moves */
-	int nextMoves2[] = {2, 1, 5, 1, 1, 2, 1, 5,
-					   6, 2, 6, 5, 2, 6, 5, 6};
-	/* The next best moves */
+	/* The next best moves Score is 5*/
 	int nextMoves1[] = {3, 1, 4, 1, 1, 3, 1, 4,
 						6, 3, 6, 4, 3, 6, 4, 6};
-	/* The next best moves */
+	
+	/* The next best moves. Score is 1*/
+	int nextMoves2[] = {2, 1, 5, 1, 1, 2, 1, 5,
+					   6, 2, 6, 5, 2, 6, 5, 6};
+
+	/* The next best moves. Score is -5*/
 	int nextEight[] = {0, 1, 1, 0, 6, 0, 1, 7,
 					   6, 0, 7, 1, 6, 7, 7, 6};
 
+	/* The last 8 moves are the worst moves possible. They will have
+	 * scores of -25 */
+
+	int score = -25;
+	
     if (pBoard->hasMoves(pSide))
     {
 		
@@ -196,6 +210,7 @@ Move *Player::bestMove(Side side)
 			std::cerr << "7::NEXT EIGHT" << std::endl;
 			return moveM;
 		}
+		
 		std::cerr << "8::WORST MOVE" << std::endl;
 
         return pBoard->Board::firstPossMove(pSide);
