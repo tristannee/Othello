@@ -28,6 +28,7 @@ public:
     bool checkMove(Move *m, Side side);
     Move *firstPossMove(Side side);
     Move *bestMoveSpace(Side side);
+    Move *bestMoveCount(Side side);
     vector<Move*> potentialMoves(Side side);
     void doMove(Move *m, Side side);
     int countChange(Move *m, Side side);
@@ -35,7 +36,7 @@ public:
     int countBlack();
     int countWhite();
     int scoreSpace(Side side);
-
+	bool InnerSquareOccupied();
     void setBoard(char data[]);
 };
 

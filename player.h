@@ -12,6 +12,7 @@ public:
     Player(Side side);
     ~Player();
     
+    void setBoard(Board *b);
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *bestMoveMinimax(Side ourside, Side theirside);
 

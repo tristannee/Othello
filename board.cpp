@@ -126,6 +126,10 @@ Move *Board::firstPossMove(Side side)
     return NULL;
 }
 
+/*
+ * Creates a list of all the potential moves for a certain side
+ * and returns that list
+ */
 vector<Move*> Board::potentialMoves(Side side)
 {
 	vector<Move*> result;
@@ -222,6 +226,29 @@ int Board::countChange(Move *m, Side side) {
     return count;
 }
 
+/*
+ * Returns a best move based on the count change of that move
+ */
+Move *Board::bestMoveCount(Side side) {
+	vector<Move*> moves = potentialMoves(side);
+	Move *bestMove = moves[0];
+	Move *tempMove;
+	if (moves.size() > 1)
+	{
+		for (unsigned int i = 1; i < moves.size(); i++)
+		{
+			tempMove = moves[i];
+			if (countChange(tempMove, side) > countChange(bestMove, side))
+				bestMove = tempMove;
+		}
+	}
+	return bestMove;
+}
+
+/*
+ * Returns a best move based on the score derived from
+ * the weightage of the spaces occupied by that move
+ */
 Move *Board::bestMoveSpace(Side side)
 {
 	
@@ -278,7 +305,7 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveC, side))
 		{
-			std::cerr << "1::CORNER" << std::endl;
+			//std::cerr << "1::CORNER" << std::endl;
 			return moveC;
 		}
 			
@@ -292,7 +319,7 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveG, side))
 		{
-			std::cerr << "2::GOOD EDGE" << std::endl;
+			//std::cerr << "2::GOOD EDGE" << std::endl;
 			return moveG;	
 		}
 			
@@ -306,7 +333,7 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveI, side))
 		{
-			std::cerr << "3::GOOD INNER CORNER" << std::endl;
+			//std::cerr << "3::GOOD INNER CORNER" << std::endl;
 			return moveI;	
 		}
 
@@ -320,7 +347,7 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveS, side))
 		{
-			std::cerr << "4::INNER SQUARE" << std::endl;
+			//std::cerr << "4::INNER SQUARE" << std::endl;
 			return moveS;			
 		}	
 			
@@ -334,7 +361,7 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveN, side))
 		{
-			std::cerr << "5::NEXT MOVES 1" << std::endl;
+			//std::cerr << "5::NEXT MOVES 1" << std::endl;
 			return moveN;
 		}
 			
@@ -348,7 +375,7 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveX, side))
 		{
-			std::cerr << "6::NEXT MOVES 2" << std::endl;
+			//std::cerr << "6::NEXT MOVES 2" << std::endl;
 			return moveX;
 		}
 			
@@ -362,11 +389,11 @@ Move *Board::bestMoveSpace(Side side)
 		}
 		if (checkMove(moveM, side))
 		{
-			std::cerr << "7::NEXT EIGHT" << std::endl;
+			//std::cerr << "7::NEXT EIGHT" << std::endl;
 			return moveM;
 		}
 		
-		std::cerr << "8::WORST MOVE" << std::endl;
+		//std::cerr << "8::WORST MOVE" << std::endl;
 
         return firstPossMove(side);
     }
@@ -374,6 +401,25 @@ Move *Board::bestMoveSpace(Side side)
         return NULL;
 }
 
+/*
+ * Returns false if any of the cells of the inner square are unoccupied.
+ * If it is all occupied, return true.
+ */
+bool Board::InnerSquareOccupied()
+{
+	bool occ = true;
+	int innerSquare[] = {2, 3, 2, 4, 3, 2, 3, 4, 4, 2, 4, 4, 5, 3, 5, 4};
+	for (int i = 0; i < 16; i += 2)
+	{
+		if (!occupied(innerSquare[i], innerSquare[i + 1]))
+			occ = false;
+	}
+	return occ;
+}
+
+/*
+ * Calculates score for a side based on space weightage
+ */
 int Board::scoreSpace(Side side)
 {
 	int corners[] = {0, 0, 0, 7, 7, 0, 7, 7};
@@ -396,7 +442,7 @@ int Board::scoreSpace(Side side)
 					   6, 0, 7, 1, 6, 7, 7, 6};
 
 	int score = 0;
-	bool foundScore = false;
+	bool foundScore;
 	
 	for (int r = 0; r < 8; r++)
 	{
@@ -404,11 +450,12 @@ int Board::scoreSpace(Side side)
 		{
 			if (get(side, r, c))
 			{
+				foundScore = false;
 				for (int i = 0; i < 8; i += 2)
 				{
 					if (r == corners[i] && c == corners[i + 1])
 					{
-						score += 100;
+						score += 50;
 						foundScore = true;
 					}
 				}
@@ -418,7 +465,7 @@ int Board::scoreSpace(Side side)
 					{
 						if (r == goodEdges[i] && c == corners[i + 1])
 						{
-							score += 50;
+							score += 10;
 							foundScore = true;
 						}
 					}
@@ -429,7 +476,7 @@ int Board::scoreSpace(Side side)
 					{
 						if (r == innerSquare[i] && c == innerSquare[i + 1])
 						{
-							score += 25;
+							score += 3;
 							foundScore = true;
 						}
 					}
@@ -440,7 +487,7 @@ int Board::scoreSpace(Side side)
 					{
 						if (r == goodInnerCorners[i] && c == goodInnerCorners[i + 1])
 						{
-							score += 15;
+							score += 7;
 							foundScore = true;
 						}
 					}
@@ -451,7 +498,7 @@ int Board::scoreSpace(Side side)
 					{
 						if (r == nextMoves1[i] && c == nextMoves1[i + 1])
 						{
-							score += 5;
+							score += 2;
 							foundScore = true;
 						}
 					}
@@ -473,15 +520,15 @@ int Board::scoreSpace(Side side)
 					{
 						if (r == nextEight[i] && c == nextEight[i + 1])
 						{
-							score -= 5;
+							score -= 15;
 							foundScore = true;
 						}
 					}
 				}
-				else
+				else if (foundScore == false)
 				{
-					score -= 25;
-				}		
+					score -= 999;
+				}
 			}
 		}
 	}

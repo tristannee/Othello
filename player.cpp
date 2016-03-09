@@ -32,6 +32,15 @@ Player::~Player() {
 }
 
 /*
+ * Sets current board for the player
+ * to a given board.
+ */
+void Player::setBoard(Board *b)
+{
+	pBoard = b;
+}
+
+/*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
  * or if the opponent passed on the last move, then opponentsMove will be NULL.
@@ -59,9 +68,13 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         pBoard->Board::doMove(opponentsMove, oppSide);
 		
         //Find our best move, and implement our move onto our board
-        //One based on minimax, another on space prioritization algorithm
-        //Move *ourMove = pBoard->Board::bestMoveSpace(pSide);
-        Move *ourMove = bestMoveMinimax(pSide, oppSide);
+        Move *ourMove;
+        //NON MINIMAX ALGORITHM - just based on best move space heuristic
+        if (!testingMinimax)
+			ourMove = pBoard->Board::bestMoveSpace(pSide);
+        else
+			ourMove = bestMoveMinimax(pSide, oppSide);
+        //MINIMAX ALGORITHM
         
         pBoard->Board::doMove(ourMove, pSide);
         return ourMove;
@@ -84,17 +97,26 @@ Move *Player::bestMoveMinimax(Side ourside, Side theirside)
 		//a board to be used temporarily in each check of the
 		//opponents move and resulting score
 		vector<Move*> moves = pBoard->Board::potentialMoves(ourside);
-		Move *bestMove = moves[0];
+		Move *bestMove = moves[0]; //our best move
 		Move *tempMove;
 		int tempScore;
 
 		//calculate initial score for the first move
 		Board *tempBoard = pBoard->Board::copy();
 		tempBoard->Board::doMove(bestMove, ourside);
+		
 		tempMove = tempBoard->Board::bestMoveSpace(theirside);
+		//tempMove = tempBoard->Board::bestMoveCount(theirside);
+		
 		tempBoard->Board::doMove(tempMove, theirside);
-		int bestScore = tempBoard->Board::count(ourside) - tempBoard->Board::count(theirside);
-		//int bestScore = tempBoard->Board::scoreSpace(ourside) - tempBoard->Board::scoreSpace(theirside);
+		int ourCount = tempBoard->Board::count(ourside);
+		int theirCount = tempBoard->Board::count(theirside);
+		//int ourSpace = tempBoard->Board::scoreSpace(ourside);
+		//int theirSpace = tempBoard->Board::scoreSpace(theirside);
+		int bestScore = ourCount - theirCount;
+		//int bestScore = ourSpace - theirSpace;
+		//std::cerr << "Our Space Count :: " << ourSpace << "---";
+		//std::cerr << "Their Space Count :: " << theirSpace << endl;
 			
 		if (moves.size() > 1)
 		{
@@ -105,28 +127,29 @@ Move *Player::bestMoveMinimax(Side ourside, Side theirside)
 				//do one of our moves
 				tempBoard->Board::doMove(moves[i], ourside);
 				
+				
 				if (tempBoard->hasMoves(theirside))
 				{
 					tempMove = tempBoard->Board::bestMoveSpace(theirside);
+					//tempMove = tempBoard->Board::bestMoveCount(theirside);
 					
 					//do their best move based on our current move
 					tempBoard->Board::doMove(tempMove, theirside);
 					
 					//calculate score based on differences of stone numbers
-					tempScore = tempBoard->Board::count(ourside) - tempBoard->Board::count(theirside);
+					//tempScore = tempBoard->Board::count(ourside) - tempBoard->Board::count(theirside);
 					
 					//or calculate score based on specialized spaces algorithm
-					//tempScore = tempBoard->Board::scoreSpace(ourside) - tempBoard->Board::scoreSpace(theirside);
-					//comment out the other one if using this one
+					tempScore = tempBoard->Board::scoreSpace(ourside) - tempBoard->Board::scoreSpace(theirside);
 					
 					if (tempScore > bestScore)
 						bestMove = moves[i];
 				}
 			}
-		} 
-		
+		}
 		return bestMove;
 	}
+	return NULL;
 }
 
 
