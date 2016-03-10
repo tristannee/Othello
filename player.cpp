@@ -57,10 +57,6 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (!pBoard->isDone())
     {
         pBoard->Board::doMove(opponentsMove, oppSide);
-		bool first = true;
-		for (int i = 0; i < 2; i++)
-		{
-			if (first == true
         //Find our best move, and implement our move onto our board
         Move *ourMove = bestMove(pSide);
         pBoard->Board::doMove(ourMove, pSide);
@@ -221,3 +217,4 @@ Move *Player::bestMove(Side side)
     else
         return NULL;
 }
+
