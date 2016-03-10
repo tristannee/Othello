@@ -32,6 +32,15 @@ Player::~Player() {
 }
 
 /*
+ * Sets current board for the player
+ * to a given board.
+ */
+void Player::setBoard(Board *b)
+{
+	pBoard = b;
+}
+
+/*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
  * or if the opponent passed on the last move, then opponentsMove will be NULL.
@@ -57,164 +66,102 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (!pBoard->isDone())
     {
         pBoard->Board::doMove(opponentsMove, oppSide);
+<<<<<<< HEAD
+=======
+		
+>>>>>>> df8ebfce169010b8ae817188088aec33d0cac54d
         //Find our best move, and implement our move onto our board
-        Move *ourMove = bestMove(pSide);
+        Move *ourMove;
+        //NON MINIMAX ALGORITHM - just based on best move space heuristic
+        if (!testingMinimax)
+			ourMove = pBoard->Board::bestMoveSpace(pSide);
+        else
+			ourMove = bestMoveMinimax(pSide, oppSide);
+        //MINIMAX ALGORITHM
+        
         pBoard->Board::doMove(ourMove, pSide);
         return ourMove;
     }
     return NULL;
 }
 
-Move *Player::bestMove(Side side)
-{
-	//std::this_thread::sleep_for (std::chrono::seconds(1));
-	
-    /* The corners are the best possible moves to play.
-     * Score for corners is 100.*/
-	int corners[] = {0, 0, 0, 7, 7, 0, 7, 7};
 
-	/* The good edges are all the edges except the corners and the edge
-	 * spots adjacent to the corners. These are the second best moves to
-	 * be played, right after the corners. 
-	 * Score for good edges is 50*/
-	int goodEdges[] = {0, 2, 0, 3, 0, 4, 0, 5,
-						7, 2, 7, 3, 7, 4, 7, 5,
-						2, 0, 3, 0, 4, 0, 4, 0,
-						2, 7, 3, 7, 4, 7, 5, 7};
-						
-	/* The inner square (surrounds the starting square), is the safest
-    * place to play if there are no good edges or corners available. 
-    * Score for inner square is 25*/
-	int innerSquare[] = {2, 3, 2, 4, 3, 2, 3, 4, 4, 2, 4, 4, 5, 3, 5, 4};
-	
-	/* These are the corners of the inner square. 
-	 * Score for good inner corners is 15*/
-	int goodInnerCorners[] = {2, 2, 2, 4, 5, 2, 5, 4};
-	
-	/* The next best moves Score is 5*/
-	int nextMoves1[] = {3, 1, 4, 1, 1, 3, 1, 4,
-						6, 3, 6, 4, 3, 6, 4, 6};
-	
-	/* The next best moves. Score is 1*/
-	int nextMoves2[] = {2, 1, 5, 1, 1, 2, 1, 5,
-					   6, 2, 6, 5, 2, 6, 5, 6};
+/*
+ * Uses minimax algorithm to find our best current move
+ * 
+ * Current depth: 2 ply
+ */
+Move *Player::bestMoveMinimax(Side ourside, Side theirside)
+{	
+	if (pBoard->hasMoves(ourside))
+	{
+		//initialize moves list, sets our current best move
+		//to the first move in that list, and also initializes
+		//a board to be used temporarily in each check of the
+		//opponents move and resulting score
+		vector<Move*> moves = pBoard->Board::potentialMoves(ourside);
+		Move *bestMove = moves[0]; //our best move
+		Move *tempMove;
+		int tempScore;
 
-	/* The next best moves. Score is -5*/
-	int nextEight[] = {0, 1, 1, 0, 6, 0, 1, 7,
-					   6, 0, 7, 1, 6, 7, 7, 6};
-
-	/* The last 8 moves are the worst moves possible. They will have
-	 * scores of -25 */
-
-	int score = -25;
-	
-    if (pBoard->hasMoves(pSide))
-    {
+		//calculate initial score for the first move
+		Board *tempBoard = pBoard->Board::copy();
+		tempBoard->Board::doMove(bestMove, ourside);
 		
-		Move *moveC = new Move(corners[0], corners[1]);
-		for (int i = 2; i < 8; i += 2)
-		{
-			Move *move = new Move(corners[i], corners[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-			    pBoard->Board::countChange(moveC, pSide))
-			    moveC = move;
-			//std::cerr << pBoard->Board::countChange(move, pSide) << std::endl;
-		}
-		if (pBoard->Board::checkMove(moveC, pSide))
-		{
-			std::cerr << "1::CORNER" << std::endl;
-			return moveC;
-		}
-			
-		Move *moveG = new Move(goodEdges[0], goodEdges[1]);
-		for (int i = 2; i < 32; i += 2)
-		{
-			Move *move = new Move(corners[i], corners[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-				pBoard->Board::countChange(moveG, pSide))
-				moveG = move;
-		}
-		if (pBoard->Board::checkMove(moveG, pSide))
-		{
-			std::cerr << "2::GOOD EDGE" << std::endl;
-			return moveG;	
-		}
-			
-		Move *moveI = new Move(goodInnerCorners[0], goodInnerCorners[1]);
-		for (int i = 2; i < 8; i += 2)
-		{
-			Move *move = new Move(goodInnerCorners[i], goodInnerCorners[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-				pBoard->Board::countChange(moveI, pSide))
-				moveI = move;
-		}
-		if (pBoard->Board::checkMove(moveI, pSide))
-		{
-			std::cerr << "3::GOOD INNER CORNER" << std::endl;
-			return moveI;	
-		}
-
-		Move *moveS = new Move(innerSquare[0], innerSquare[1]);
-		for (int i = 2; i < 16; i += 2)
-		{
-			Move *move = new Move(innerSquare[i], innerSquare[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-				pBoard->Board::countChange(moveS, pSide))
-				moveS = move;
-		}
-		if (pBoard->Board::checkMove(moveS, pSide))
-		{
-			std::cerr << "4::INNER SQUARE" << std::endl;
-			return moveS;			
-		}	
-			
-		Move *moveN = new Move(nextMoves1[0], nextMoves1[1]);
-		for (int i = 2; i < 16; i += 2)
-		{
-			Move *move = new Move(nextMoves1[i], nextMoves1[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-				pBoard->Board::countChange(moveN, pSide))
-				moveN = move;
-		}
-		if (pBoard->Board::checkMove(moveN, pSide))
-		{
-			std::cerr << "5::NEXT MOVES 1" << std::endl;
-			return moveN;
-		}
-			
-		Move *moveX = new Move(nextMoves2[0], nextMoves2[1]);
-		for (int i = 2; i < 16; i += 2)
-		{
-			Move *move = new Move(nextMoves2[i], nextMoves2[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-				pBoard->Board::countChange(moveX, pSide))
-				moveX = move;
-		}
-		if (pBoard->Board::checkMove(moveX, pSide))
-		{
-			std::cerr << "6::NEXT MOVES 2" << std::endl;
-			return moveX;
-		}
-			
-		Move *moveM = new Move(nextEight[0], nextEight[1]);
-		for (int i = 2; i < 8; i += 2)
-		{
-			Move *move = new Move(nextEight[i], nextEight[i + 1]);
-			if (pBoard->Board::countChange(move, pSide) >
-				pBoard->Board::countChange(moveM, pSide))
-				moveM = move;
-		}
-		if (pBoard->Board::checkMove(moveM, pSide))
-		{
-			std::cerr << "7::NEXT EIGHT" << std::endl;
-			return moveM;
-		}
+		tempMove = tempBoard->Board::bestMoveSpace(theirside);
+		//tempMove = tempBoard->Board::bestMoveCount(theirside);
 		
-		std::cerr << "8::WORST MOVE" << std::endl;
+		tempBoard->Board::doMove(tempMove, theirside);
+		int ourCount = tempBoard->Board::count(ourside);
+		int theirCount = tempBoard->Board::count(theirside);
+		//int ourSpace = tempBoard->Board::scoreSpace(ourside);
+		//int theirSpace = tempBoard->Board::scoreSpace(theirside);
+		int bestScore = ourCount - theirCount;
+		//int bestScore = ourSpace - theirSpace;
+		//std::cerr << "Our Space Count :: " << ourSpace << "---";
+		//std::cerr << "Their Space Count :: " << theirSpace << endl;
+			
+		if (moves.size() > 1)
+		{
+			for (unsigned int i = 1; i < moves.size(); i++)
+			{
+				tempBoard = pBoard->Board::copy();
+				
+				//do one of our moves
+				tempBoard->Board::doMove(moves[i], ourside);
+				
+				
+				if (tempBoard->hasMoves(theirside))
+				{
+					tempMove = tempBoard->Board::bestMoveSpace(theirside);
+					//tempMove = tempBoard->Board::bestMoveCount(theirside);
+					
+					//do their best move based on our current move
+					tempBoard->Board::doMove(tempMove, theirside);
+					
+					//calculate score based on differences of stone numbers
+					//tempScore = tempBoard->Board::count(ourside) - tempBoard->Board::count(theirside);
+					
+					//or calculate score based on specialized spaces algorithm
+					tempScore = tempBoard->Board::scoreSpace(ourside) - tempBoard->Board::scoreSpace(theirside);
+					
+					if (tempScore > bestScore)
+						bestMove = moves[i];
+				}
+			}
+		}
+		return bestMove;
+	}
+	return NULL;
+}
 
+
+<<<<<<< HEAD
         return pBoard->Board::firstPossMove(pSide);
     }
     else
         return NULL;
 }
 
+=======
+>>>>>>> df8ebfce169010b8ae817188088aec33d0cac54d

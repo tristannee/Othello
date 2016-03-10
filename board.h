@@ -2,6 +2,8 @@
 #define __BOARD_H__
 
 #include <bitset>
+#include <vector>
+#include <iostream>
 #include "common.h"
 using namespace std;
 
@@ -15,7 +17,6 @@ private:
     bool get(Side side, int x, int y);
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
-    //vector<Move> potentialMoves;
       
 public:
     Board();
@@ -26,12 +27,16 @@ public:
     bool hasMoves(Side side);
     bool checkMove(Move *m, Side side);
     Move *firstPossMove(Side side);
+    Move *bestMoveSpace(Side side);
+    Move *bestMoveCount(Side side);
+    vector<Move*> potentialMoves(Side side);
     void doMove(Move *m, Side side);
     int countChange(Move *m, Side side);
     int count(Side side);
     int countBlack();
     int countWhite();
-
+    int scoreSpace(Side side);
+	bool InnerSquareOccupied();
     void setBoard(char data[]);
 };
 
