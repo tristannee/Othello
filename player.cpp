@@ -66,10 +66,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (!pBoard->isDone())
     {
         pBoard->Board::doMove(opponentsMove, oppSide);
-<<<<<<< HEAD
-=======
-		
->>>>>>> df8ebfce169010b8ae817188088aec33d0cac54d
+
         //Find our best move, and implement our move onto our board
         Move *ourMove;
         //NON MINIMAX ALGORITHM - just based on best move space heuristic
@@ -154,14 +151,3 @@ Move *Player::bestMoveMinimax(Side ourside, Side theirside)
 	}
 	return NULL;
 }
-
-
-<<<<<<< HEAD
-        return pBoard->Board::firstPossMove(pSide);
-    }
-    else
-        return NULL;
-}
-
-=======
->>>>>>> df8ebfce169010b8ae817188088aec33d0cac54d
