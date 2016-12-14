@@ -120,7 +120,8 @@ Move *Board::firstPossMove(Side side)
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             Move *move = new Move(i, j);
-            if (checkMove(move, side)) return move;
+            if (checkMove(move, side)) {return move;}
+	    else {delete move;}
         }
     }
     return NULL;
@@ -136,8 +137,9 @@ vector<Move*> Board::potentialMoves(Side side)
 	for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             Move *move = new Move(i, j);
-            if (checkMove(move, side))
-				result.push_back(move);
+            if (checkMove(move, side)) {result.push_back(move);}
+	    else {delete move;}
+	    
         }
     }
     
@@ -238,7 +240,7 @@ Move *Board::bestMoveCount(Side side) {
 		for (unsigned int i = 1; i < moves.size(); i++)
 		{
 			tempMove = moves[i];
-			if (countChange(tempMove, side) > countChange(bestMove, side))
+			if (countChange(tempMove, side) > countChange(bestMove, side)){
 				bestMove = tempMove;
 		}
 	}
@@ -293,19 +295,22 @@ Move *Board::bestMoveSpace(Side side)
 	
     if (hasMoves(side))
     {
-		
+		/* Check moves in different areas based on how good
+		* those moves are */
+	    
 		Move *moveC = new Move(corners[0], corners[1]);
 		for (int i = 2; i < 8; i += 2)
 		{
 			Move *move = new Move(corners[i], corners[i + 1]);
 			if (countChange(move, side) >
-			    countChange(moveC, side))
-			    moveC = move;
-			//std::cerr << pBoard->Board::countChange(move, pSide) << std::endl;
+			    countChange(moveC, side)){
+				delete moveC;
+				moveC = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveC, side))
 		{
-			//std::cerr << "1::CORNER" << std::endl;
 			return moveC;
 		}
 			
@@ -314,12 +319,14 @@ Move *Board::bestMoveSpace(Side side)
 		{
 			Move *move = new Move(corners[i], corners[i + 1]);
 			if (countChange(move, side) >
-				countChange(moveG, side))
+				countChange(moveG, side)){
+				delete moveG;
 				moveG = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveG, side))
 		{
-			//std::cerr << "2::GOOD EDGE" << std::endl;
 			return moveG;	
 		}
 			
@@ -328,12 +335,14 @@ Move *Board::bestMoveSpace(Side side)
 		{
 			Move *move = new Move(goodInnerCorners[i], goodInnerCorners[i + 1]);
 			if (countChange(move, side) >
-				countChange(moveI, side))
+				countChange(moveI, side)){
+				delete moveI;
 				moveI = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveI, side))
 		{
-			//std::cerr << "3::GOOD INNER CORNER" << std::endl;
 			return moveI;	
 		}
 
@@ -342,12 +351,14 @@ Move *Board::bestMoveSpace(Side side)
 		{
 			Move *move = new Move(innerSquare[i], innerSquare[i + 1]);
 			if (countChange(move, side) >
-				countChange(moveS, side))
+				countChange(moveS, side)){
+				delete moveS;
 				moveS = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveS, side))
 		{
-			//std::cerr << "4::INNER SQUARE" << std::endl;
 			return moveS;			
 		}	
 			
@@ -356,12 +367,14 @@ Move *Board::bestMoveSpace(Side side)
 		{
 			Move *move = new Move(nextMoves1[i], nextMoves1[i + 1]);
 			if (countChange(move, side) >
-				countChange(moveN, side))
+				countChange(moveN, side)){
+				delete moveN;
 				moveN = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveN, side))
 		{
-			//std::cerr << "5::NEXT MOVES 1" << std::endl;
 			return moveN;
 		}
 			
@@ -370,8 +383,11 @@ Move *Board::bestMoveSpace(Side side)
 		{
 			Move *move = new Move(nextMoves2[i], nextMoves2[i + 1]);
 			if (countChange(move, side) >
-				countChange(moveX, side))
+				countChange(moveX, side)){
+				delete moveX;
 				moveX = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveX, side))
 		{
@@ -384,17 +400,16 @@ Move *Board::bestMoveSpace(Side side)
 		{
 			Move *move = new Move(nextEight[i], nextEight[i + 1]);
 			if (countChange(move, side) >
-				countChange(moveM, side))
+				countChange(moveM, side)){
+				delete moveM;
 				moveM = move;
+			}
+			else {delete move;}
 		}
 		if (checkMove(moveM, side))
 		{
-			//std::cerr << "7::NEXT EIGHT" << std::endl;
 			return moveM;
 		}
-		
-		//std::cerr << "8::WORST MOVE" << std::endl;
-
         return firstPossMove(side);
     }
     else
