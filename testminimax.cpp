@@ -47,6 +47,8 @@ int main(int argc, char *argv[]) {
         }
         printf(", expected (1, 1)\n");
     }
+    
+    delete board;
 
     return 0;
 }
