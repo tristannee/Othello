@@ -6,7 +6,7 @@
  * within 30 seconds.
  */
 Player::Player(Side side) {
-    // Will be set to true in test_minimax.cpp.
+    /* Will be set to true in test_minimax.cpp. */
     testingMinimax = false;
 
     /* 
@@ -15,9 +15,9 @@ Player::Player(Side side) {
      * 30 seconds.
      */
      pBoard = new Board(); // player board
-     //pBoard->Board::copy(); // set up the board
      timeTaken = 0;
-     //initalize our side and the opponents side
+	
+     /* initalize our side and the opponents side */
      pSide = side;
      if (side == BLACK)
         oppSide = WHITE;
@@ -29,6 +29,7 @@ Player::Player(Side side) {
  * Destructor for the player.
  */
 Player::~Player() {
+	delete pBoard;
 }
 
 /*
